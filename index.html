@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude 動画リンク集</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Hiragino Sans', 'Meiryo', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+        }
+
+        header {
+            text-align: center;
+            padding: 48px 20px 32px;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            color: #f5f5f5;
+            letter-spacing: 0.05em;
+        }
+
+        header p {
+            margin-top: 8px;
+            color: #a0a0b0;
+            font-size: 0.95rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px 60px;
+        }
+
+        .link-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .link-card {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
+        }
+
+        .link-card:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .link-card a {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 18px 24px;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .link-number {
+            flex-shrink: 0;
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #e77f67, #cf6a87);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #fff;
+        }
+
+        .link-title {
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: #f0f0f0;
+        }
+
+        .link-card:hover .link-title {
+            color: #fff;
+        }
+
+        .arrow {
+            margin-left: auto;
+            flex-shrink: 0;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 1.2rem;
+            transition: color 0.2s;
+        }
+
+        .link-card:hover .arrow {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: #606070;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Claude 動画リンク集</h1>
+        <p>Ruben's Substack - Claude & AI 活用ガイド</p>
+    </header>
+
+    <div class="container">
+        <div class="link-list">
+            <div class="link-card">
+                <a href="https://ruben.substack.com/p/claude" target="_blank" rel="noopener">
+                    <span class="link-number">1</span>
+                    <span class="link-title">Claude 101</span>
+                    <span class="arrow">&#8594;</span>
+                </a>
+            </div>
+            <div class="link-card">
+                <a href="https://ruben.substack.com/p/claude-code" target="_blank" rel="noopener">
+                    <span class="link-number">2</span>
+                    <span class="link-title">Claude Code</span>
+                    <span class="arrow">&#8594;</span>
+                </a>
+            </div>
+            <div class="link-card">
+                <a href="https://ruben.substack.com/p/claude-skills" target="_blank" rel="noopener">
+                    <span class="link-number">3</span>
+                    <span class="link-title">Claude Skills</span>
+                    <span class="arrow">&#8594;</span>
+                </a>
+            </div>
+            <div class="link-card">
+                <a href="https://ruben.substack.com/p/banana-2-3bd" target="_blank" rel="noopener">
+                    <span class="link-number">4</span>
+                    <span class="link-title">Nano banana 2</span>
+                    <span class="arrow">&#8594;</span>
+                </a>
+            </div>
+            <div class="link-card">
+                <a href="https://ruben.substack.com/p/ai-couldnt-do-excel" target="_blank" rel="noopener">
+                    <span class="link-number">5</span>
+                    <span class="link-title">Claude in Excel</span>
+                    <span class="arrow">&#8594;</span>
+                </a>
+            </div>
+            <div class="link-card">
+                <a href="https://ruben.substack.com/p/grok-420" target="_blank" rel="noopener">
+                    <span class="link-number">6</span>
+                    <span class="link-title">Best AI for Search</span>
+                    <span class="arrow">&#8594;</span>
+                </a>
+            </div>
+            <div class="link-card">
+                <a href="https://ruben.substack.com/p/1000000" target="_blank" rel="noopener">
+                    <span class="link-number">7</span>
+                    <span class="link-title">1M followers with AI</span>
+                    <span class="arrow">&#8594;</span>
+                </a>
+            </div>
+            <div class="link-card">
+                <a href="https://ruben.substack.com/p/claude-for-teams" target="_blank" rel="noopener">
+                    <span class="link-number">8</span>
+                    <span class="link-title">Claude for your team</span>
+                    <span class="arrow">&#8594;</span>
+                </a>
+            </div>
+            <div class="link-card">
+                <a href="https://ruben.substack.com/p/magic" target="_blank" rel="noopener">
+                    <span class="link-number">9</span>
+                    <span class="link-title">No prompt saves you</span>
+                    <span class="arrow">&#8594;</span>
+                </a>
+            </div>
+            <div class="link-card">
+                <a href="https://ruben.substack.com/p/powerpoint" target="_blank" rel="noopener">
+                    <span class="link-number">10</span>
+                    <span class="link-title">AI Slides (PPT in 2026)</span>
+                    <span class="arrow">&#8594;</span>
+                </a>
+            </div>
+            <div class="link-card">
+                <a href="https://ruben.substack.com/p/claude-cowork-20" target="_blank" rel="noopener">
+                    <span class="link-number">11</span>
+                    <span class="link-title">Set up Claude Cowork</span>
+                    <span class="arrow">&#8594;</span>
+                </a>
+            </div>
+            <div class="link-card">
+                <a href="https://ruben.substack.com/p/i-am-just-a-text-file" target="_blank" rel="noopener">
+                    <span class="link-number">12</span>
+                    <span class="link-title">Claude to sound like you</span>
+                    <span class="arrow">&#8594;</span>
+                </a>
+            </div>
+            <div class="link-card">
+                <a href="https://ruben.substack.com/p/claude-charts" target="_blank" rel="noopener">
+                    <span class="link-number">13</span>
+                    <span class="link-title">Claude interactive charts</span>
+                    <span class="arrow">&#8594;</span>
+                </a>
+            </div>
+            <div class="link-card">
+                <a href="https://ruben.substack.com/p/claude-computer" target="_blank" rel="noopener">
+                    <span class="link-number">14</span>
+                    <span class="link-title">Claude as your computer</span>
+                    <span class="arrow">&#8594;</span>
+                </a>
+            </div>
+            <div class="link-card">
+                <a href="https://ruben.substack.com/p/claude-cowork-project" target="_blank" rel="noopener">
+                    <span class="link-number">15</span>
+                    <span class="link-title">Claude Cowork + Project</span>
+                    <span class="arrow">&#8594;</span>
+                </a>
+            </div>
+            <div class="link-card">
+                <a href="https://ruben.substack.com/p/ai-holic" target="_blank" rel="noopener">
+                    <span class="link-number">16</span>
+                    <span class="link-title">You're an AI workaholic</span>
+                    <span class="arrow">&#8594;</span>
+                </a>
+            </div>
+            <div class="link-card">
+                <a href="https://ruben.substack.com/p/how-to-better-use-ai-before-prompting" target="_blank" rel="noopener">
+                    <span class="link-number">17</span>
+                    <span class="link-title">Setup AI before prompting</span>
+                    <span class="arrow">&#8594;</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Claude 動画リンク集</p>
+    </footer>
+</body>
+</html>
