@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日本語検定N3 文法問題 CAIシステム</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>日本語検定N3 文法問題</h1>
+            <p class="subtitle">パターン1: ( ) に当てはまる正しい日本語を選んでください</p>
+        </header>
+
+        <div id="start-screen" class="screen active">
+            <div class="card">
+                <h2>スタート画面</h2>
+                <p>247問の中からランダムに10問出題されます。</p>
+                <p>1問15秒の制限時間。カウントダウン音が鳴ります。</p>
+                <p>準備はよろしいですか？</p>
+                <button id="start-btn" class="btn btn-primary">スタート</button>
+            </div>
+
+            <div class="card history-card">
+                <h3>過去の記録</h3>
+                <div id="history-list">
+                    <p class="empty">記録はまだありません</p>
+                </div>
+                <button id="clear-history-btn" class="btn btn-secondary">記録を消去</button>
+            </div>
+        </div>
+
+        <div id="quiz-screen" class="screen">
+            <div class="status-bar">
+                <div class="status-item">
+                    <span class="label">問題</span>
+                    <span id="question-number">1</span> / 10
+                </div>
+                <div class="status-item">
+                    <span class="label">得点</span>
+                    <span id="current-score">0</span>
+                </div>
+                <div class="status-item timer-box">
+                    <span class="label">残り時間</span>
+                    <span id="timer">15</span> 秒
+                </div>
+            </div>
+
+            <div class="progress-bar">
+                <div id="progress-fill"></div>
+            </div>
+
+            <div class="card question-card">
+                <p id="question-text" class="question-text"></p>
+                <div id="choices" class="choices"></div>
+            </div>
+
+            <div id="feedback" class="feedback"></div>
+        </div>
+
+        <div id="result-screen" class="screen">
+            <div class="card result-card">
+                <h2>結果発表</h2>
+                <div class="result-score">
+                    <span id="final-score">0</span>
+                    <span class="score-total"> / 10</span>
+                </div>
+                <p id="result-comment" class="result-comment"></p>
+
+                <h3>解答一覧</h3>
+                <div id="answer-list" class="answer-list"></div>
+
+                <div class="result-actions">
+                    <button id="retry-btn" class="btn btn-primary">もう一度挑戦</button>
+                    <button id="home-btn" class="btn btn-secondary">スタート画面へ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="questions.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
