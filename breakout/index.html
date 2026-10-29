@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ブロック崩し</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Segoe UI', sans-serif;
+    color: #fff;
+    user-select: none;
+    padding: 16px;
+  }
+  h1 {
+    margin-bottom: 12px;
+    font-size: 28px;
+    color: #00d9ff;
+    text-shadow: 0 0 12px rgba(0, 217, 255, 0.5);
+  }
+  #info {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 10px;
+    font-size: 18px;
+  }
+  #info span { color: #ffd166; }
+  canvas {
+    background: #0f0f1e;
+    border: 2px solid #00d9ff;
+    border-radius: 8px;
+    box-shadow: 0 0 24px rgba(0, 217, 255, 0.3);
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+  #message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.85);
+    padding: 30px 50px;
+    border-radius: 12px;
+    border: 2px solid #00d9ff;
+    text-align: center;
+    display: none;
+    z-index: 10;
+  }
+  #message h2 {
+    font-size: 32px;
+    margin-bottom: 12px;
+  }
+  #message p { margin-bottom: 18px; color: #ccc; }
+  button {
+    background: #00d9ff;
+    color: #0f0f1e;
+    border: none;
+    padding: 10px 28px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+  button:hover { transform: scale(1.05); }
+  #controls {
+    margin-top: 12px;
+    font-size: 13px;
+    color: #888;
+  }
+  #speedControl {
+    margin-top: 12px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  #speedControl span { font-size: 14px; color: #ccc; }
+  .speed-btn {
+    background: #2a2a3e;
+    color: #ccc;
+    border: 1px solid #555;
+    padding: 6px 14px;
+    font-size: 13px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .speed-btn:hover { background: #3a3a4e; }
+  .speed-btn.active {
+    background: #00d9ff;
+    color: #0f0f1e;
+    border-color: #00d9ff;
+    font-weight: bold;
+  }
+  #account {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    font-size: 14px;
+  }
+  #account input {
+    background: #0f0f1e;
+    color: #fff;
+    border: 1px solid #555;
+    border-radius: 4px;
+    padding: 6px 8px;
+    font-size: 14px;
+    width: 150px;
+    user-select: text;
+  }
+  #account input:focus { outline: none; border-color: #00d9ff; }
+  #account button { padding: 6px 14px; font-size: 14px; }
+  #account .sub { background: #2a2a3e; color: #ccc; border: 1px solid #555; }
+  #account .user { color: #ffd166; font-weight: bold; }
+  #authError { color: #ff6b8a; width: 100%; text-align: center; min-height: 1em; }
+  #main {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: flex-start;
+    justify-content: center;
+  }
+  #gameCol { display: flex; flex-direction: column; align-items: center; max-width: 100%; }
+  #side {
+    width: 260px;
+    max-width: 100%;
+    background: rgba(15, 15, 30, 0.8);
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 14px;
+  }
+  #side h3 { color: #00d9ff; font-size: 15px; margin: 14px 0 6px; }
+  #side h3:first-child { margin-top: 0; }
+  #side ol, #side ul { list-style: none; }
+  #side li {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 3px 0;
+    border-bottom: 1px solid #222;
+  }
+  #side li.me { color: #ffd166; font-weight: bold; }
+  #side li .n { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #side .muted { color: #777; justify-content: center; }
+  #myBest { color: #ccc; }
+  #myBest span { color: #ffd166; font-weight: bold; }
+  #saveStatus { color: #ffd166; }
+</style>
+</head>
+<body>
+  <h1>ブロック崩し</h1>
+  <form id="account"></form>
+  <div id="main">
+  <div id="gameCol">
+  <div id="info">
+    スコア: <span id="score">0</span>
+    ライフ: <span id="lives">3</span>
+    レベル: <span id="level">1</span>
+  </div>
+  <canvas id="game" width="640" height="480"></canvas>
+  <div id="controls">← → キー または マウスでパドルを操作 / スペースキーで発射</div>
+  <div id="speedControl">
+    <span>球の速度:</span>
+    <button class="speed-btn" data-speed="0.6">遅い</button>
+    <button class="speed-btn active" data-speed="1.0">普通</button>
+    <button class="speed-btn" data-speed="1.5">速い</button>
+    <button class="speed-btn" data-speed="2.2">超速</button>
+  </div>
+  </div>
+  <aside id="side">
+    <h3>自分の記録</h3>
+    <p id="myBest">ログインすると記録が保存されます</p>
+    <ul id="history"></ul>
+    <h3>ランキング（自己ベスト）</h3>
+    <ol id="ranking"><li class="muted">読み込み中…</li></ol>
+  </aside>
+  </div>
+  <div id="message">
+    <h2 id="msgTitle"></h2>
+    <p id="msgText"></p>
+    <p id="saveStatus"></p>
+    <button id="restartBtn">もう一度プレイ</button>
+  </div>
+
+<script>
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+const scoreEl = document.getElementById('score');
+const livesEl = document.getElementById('lives');
+const levelEl = document.getElementById('level');
+const msgBox = document.getElementById('message');
+const msgTitle = document.getElementById('msgTitle');
+const msgText = document.getElementById('msgText');
+const restartBtn = document.getElementById('restartBtn');
+
+const W = canvas.width;
+const H = canvas.height;
+
+const paddle = { w: 90, h: 12, x: W / 2 - 45, y: H - 30, speed: 7 };
+const ball = { x: W / 2, y: H - 50, r: 8, dx: 0, dy: 0, stuck: true };
+
+const brick = { rows: 6, cols: 9, w: 60, h: 22, padding: 6, offsetTop: 60, offsetLeft: 25 };
+let bricks = [];
+const colors = ['#ff006e', '#fb5607', '#ffbe0b', '#8338ec', '#3a86ff'];
+
+let score = 0;
+let lives = 3;
+let level = 1;
+let baseSpeed = 4.5;
+let speedMultiplier = 1.0;
+let gameOver = false;
+
+const keys = { left: false, right: false };
+
+function initBricks() {
+  bricks = [];
+  for (let r = 0; r < brick.rows; r++) {
+    bricks[r] = [];
+    for (let c = 0; c < brick.cols; c++) {
+      bricks[r][c] = { x: 0, y: 0, alive: true, color: colors[Math.floor(Math.random() * colors.length)] };
+    }
+  }
+}
+
+function resetBall() {
+  ball.x = paddle.x + paddle.w / 2;
+  ball.y = paddle.y - ball.r - 1;
+  ball.dx = 0;
+  ball.dy = 0;
+  ball.stuck = true;
+}
+
+function launchBall() {
+  if (ball.stuck) {
+    const angle = (Math.random() * 0.6 - 0.3) - Math.PI / 2;
+    const sp = baseSpeed * speedMultiplier;
+    ball.dx = Math.cos(angle) * sp;
+    ball.dy = Math.sin(angle) * sp;
+    ball.stuck = false;
+  }
+}
+
+function applySpeedMultiplier(newMul) {
+  if (!ball.stuck) {
+    const cur = Math.hypot(ball.dx, ball.dy);
+    if (cur > 0) {
+      const target = baseSpeed * newMul;
+      const ratio = target / cur;
+      ball.dx *= ratio;
+      ball.dy *= ratio;
+    }
+  }
+  speedMultiplier = newMul;
+}
+
+function drawPaddle() {
+  const grad = ctx.createLinearGradient(paddle.x, paddle.y, paddle.x, paddle.y + paddle.h);
+  grad.addColorStop(0, '#00d9ff');
+  grad.addColorStop(1, '#0099cc');
+  ctx.fillStyle = grad;
+  ctx.fillRect(paddle.x, paddle.y, paddle.w, paddle.h);
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(paddle.x, paddle.y, paddle.w, paddle.h);
+}
+
+function drawBall() {
+  if (ball.stuck) return;
+  ctx.beginPath();
+  const grad = ctx.createRadialGradient(ball.x - 2, ball.y - 2, 1, ball.x, ball.y, ball.r);
+  grad.addColorStop(0, '#fff');
+  grad.addColorStop(1, '#ffd166');
+  ctx.fillStyle = grad;
+  ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function drawBricks() {
+  for (let r = 0; r < brick.rows; r++) {
+    for (let c = 0; c < brick.cols; c++) {
+      const b = bricks[r][c];
+      if (!b.alive) continue;
+      b.x = brick.offsetLeft + c * (brick.w + brick.padding);
+      b.y = brick.offsetTop + r * (brick.h + brick.padding);
+      ctx.fillStyle = b.color;
+      ctx.fillRect(b.x, b.y, brick.w, brick.h);
+      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.strokeRect(b.x, b.y, brick.w, brick.h);
+    }
+  }
+}
+
+function collideBricks() {
+  for (let r = 0; r < brick.rows; r++) {
+    for (let c = 0; c < brick.cols; c++) {
+      const b = bricks[r][c];
+      if (!b.alive) continue;
+      if (ball.x + ball.r > b.x && ball.x - ball.r < b.x + brick.w &&
+          ball.y + ball.r > b.y && ball.y - ball.r < b.y + brick.h) {
+        const prevX = ball.x - ball.dx;
+        const prevY = ball.y - ball.dy;
+        if (prevX + ball.r <= b.x || prevX - ball.r >= b.x + brick.w) {
+          ball.dx = -ball.dx;
+        } else {
+          ball.dy = -ball.dy;
+        }
+        b.alive = false;
+        score += 10 * level;
+        scoreEl.textContent = score;
+        if (allCleared()) nextLevel();
+        return;
+      }
+    }
+  }
+}
+
+function allCleared() {
+  return bricks.every(row => row.every(b => !b.alive));
+}
+
+function nextLevel() {
+  level++;
+  levelEl.textContent = level;
+  baseSpeed += 0.6;
+  initBricks();
+  resetBall();
+  showMessage('レベル ' + level + ' !', 'スペースキーまたはクリックで発射', false);
+}
+
+function update() {
+  if (gameOver) return;
+
+  if (keys.left) paddle.x -= paddle.speed;
+  if (keys.right) paddle.x += paddle.speed;
+  if (paddle.x < 0) paddle.x = 0;
+  if (paddle.x + paddle.w > W) paddle.x = W - paddle.w;
+
+  if (ball.stuck) {
+    ball.x = paddle.x + paddle.w / 2;
+    return;
+  }
+
+  ball.x += ball.dx;
+  ball.y += ball.dy;
+
+  if (ball.x - ball.r < 0) { ball.x = ball.r; ball.dx = -ball.dx; }
+  if (ball.x + ball.r > W) { ball.x = W - ball.r; ball.dx = -ball.dx; }
+  if (ball.y - ball.r < 0) { ball.y = ball.r; ball.dy = -ball.dy; }
+
+  if (ball.y + ball.r >= paddle.y &&
+      ball.y - ball.r <= paddle.y + paddle.h &&
+      ball.x >= paddle.x && ball.x <= paddle.x + paddle.w &&
+      ball.dy > 0) {
+    const hit = (ball.x - (paddle.x + paddle.w / 2)) / (paddle.w / 2);
+    const angle = hit * (Math.PI / 3) - Math.PI / 2;
+    const speed = Math.hypot(ball.dx, ball.dy);
+    ball.dx = Math.cos(angle) * speed;
+    ball.dy = Math.sin(angle) * speed;
+    ball.y = paddle.y - ball.r - 1;
+  }
+
+  collideBricks();
+
+  if (ball.y - ball.r > H) {
+    lives--;
+    livesEl.textContent = lives;
+    if (lives <= 0) {
+      endGame(false);
+    } else {
+      resetBall();
+    }
+  }
+}
+
+function render() {
+  ctx.clearRect(0, 0, W, H);
+  drawBricks();
+  drawPaddle();
+  drawBall();
+}
+
+function loop() {
+  update();
+  render();
+  requestAnimationFrame(loop);
+}
+
+function showMessage(title, text, over) {
+  msgTitle.textContent = title;
+  msgText.textContent = text;
+  msgBox.style.display = 'block';
+  restartBtn.style.display = over ? 'inline-block' : 'none';
+  if (!over) {
+    setTimeout(() => { msgBox.style.display = 'none'; }, 1500);
+  }
+}
+
+function endGame(won) {
+  gameOver = true;
+  showMessage(won ? 'クリア!' : 'ゲームオーバー', 'スコア: ' + score, true);
+  saveRecord(score, level);
+}
+
+function restart() {
+  score = 0;
+  lives = 3;
+  level = 1;
+  baseSpeed = 4.5;
+  gameOver = false;
+  scoreEl.textContent = score;
+  livesEl.textContent = lives;
+  levelEl.textContent = level;
+  initBricks();
+  resetBall();
+  msgBox.style.display = 'none';
+  saveStatus.textContent = '';
+}
+
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT') return;
+  if (e.key === 'ArrowLeft') keys.left = true;
+  if (e.key === 'ArrowRight') keys.right = true;
+  if (e.key === ' ') { e.preventDefault(); launchBall(); }
+});
+document.addEventListener('keyup', e => {
+  if (e.key === 'ArrowLeft') keys.left = false;
+  if (e.key === 'ArrowRight') keys.right = false;
+});
+
+canvas.addEventListener('mousemove', e => {
+  const rect = canvas.getBoundingClientRect();
+  const x = (e.clientX - rect.left) * (W / rect.width);
+  paddle.x = x - paddle.w / 2;
+  if (paddle.x < 0) paddle.x = 0;
+  if (paddle.x + paddle.w > W) paddle.x = W - paddle.w;
+});
+
+canvas.addEventListener('click', launchBall);
+restartBtn.addEventListener('click', restart);
+
+document.querySelectorAll('.speed-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    applySpeedMultiplier(parseFloat(btn.dataset.speed));
+  });
+});
+
+// ---------- ユーザ登録・ログイン / 記録の保存 ----------
+const accountEl = document.getElementById('account');
+const saveStatus = document.getElementById('saveStatus');
+let token = null;
+let user = null;
+try { token = localStorage.getItem('breakout-token'); } catch {}
+
+async function api(path, options = {}) {
+  const headers = { 'content-type': 'application/json' };
+  if (token) headers.authorization = 'Bearer ' + token;
+  const res = await fetch(path, { ...options, headers });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw Object.assign(new Error(data.error || '通信に失敗しました'), { status: res.status });
+  return data;
+}
+
+function setToken(t) {
+  token = t;
+  try { t ? localStorage.setItem('breakout-token', t) : localStorage.removeItem('breakout-token'); } catch {}
+}
+
+function el(tag, props = {}, text) {
+  const e = Object.assign(document.createElement(tag), props);
+  if (text != null) e.textContent = text;
+  return e;
+}
+
+function renderAccount(error = '') {
+  accountEl.replaceChildren();
+  if (user) {
+    accountEl.onsubmit = e => e.preventDefault();
+    accountEl.append(
+      el('span', {}, 'ログイン中: '),
+      el('span', { className: 'user' }, user.name),
+      el('span', {}, '（' + user.userId + '）'),
+      el('button', { type: 'button', className: 'sub', onclick: logout }, 'ログアウト'),
+    );
+    return;
+  }
+  const idIn = el('input', { name: 'username', placeholder: 'ユーザID', autocomplete: 'username', required: true });
+  const pwIn = el('input', { name: 'password', type: 'password', placeholder: 'パスワード', autocomplete: 'current-password', required: true });
+  const nameIn = el('input', { name: 'nickname', placeholder: '表示名（登録時・任意）', maxLength: 12 });
+  const errEl = el('div', { id: 'authError' }, error);
+  const submit = action => async e => {
+    e.preventDefault();
+    if (!accountEl.reportValidity()) return;
+    errEl.textContent = action === 'register' ? '登録中…' : 'ログイン中…';
+    try {
+      const data = await api('/api/auth', {
+        method: 'POST',
+        body: JSON.stringify({ action, userId: idIn.value, password: pwIn.value, name: nameIn.value }),
+      });
+      setToken(data.token);
+      user = data.user;
+      renderAccount();
+      loadRecords();
+    } catch (err) {
+      errEl.textContent = err.message;
+    }
+  };
+  accountEl.onsubmit = submit('login');
+  accountEl.append(
+    idIn, pwIn, nameIn,
+    el('button', { type: 'submit' }, 'ログイン'),
+    el('button', { type: 'button', className: 'sub', onclick: submit('register') }, '新規登録'),
+    errEl,
+  );
+}
+
+async function logout() {
+  try { await api('/api/auth', { method: 'DELETE' }); } catch {}
+  setToken(null);
+  user = null;
+  renderAccount();
+  loadRecords();
+}
+
+function renderRecords(data) {
+  const rankEl = document.getElementById('ranking');
+  rankEl.replaceChildren();
+  if (!data.ranking.length) rankEl.append(el('li', { className: 'muted' }, 'まだ記録がありません'));
+  data.ranking.forEach((r, i) => {
+    const li = el('li', { className: user && r.userId === user.userId ? 'me' : '' });
+    li.append(el('span', { className: 'n' }, (i + 1) + '. ' + r.name), el('span', {}, r.score.toLocaleString()));
+    rankEl.append(li);
+  });
+
+  const bestEl = document.getElementById('myBest');
+  const histEl = document.getElementById('history');
+  histEl.replaceChildren();
+  if (!data.mine) {
+    bestEl.textContent = 'ログインすると記録が保存されます';
+    return;
+  }
+  bestEl.replaceChildren(
+    '自己ベスト: ', el('span', {}, data.mine.best == null ? '-' : data.mine.best.toLocaleString()),
+    data.mine.rank ? '（' + data.mine.rank + '位）' : '',
+  );
+  if (!data.mine.history.length) histEl.append(el('li', { className: 'muted' }, 'まだプレイ記録がありません'));
+  data.mine.history.slice(0, 10).forEach(h => {
+    const d = new Date(h.date);
+    const li = el('li');
+    li.append(
+      el('span', {}, (d.getMonth() + 1) + '/' + d.getDate() + ' ' + d.toTimeString().slice(0, 5) + ' Lv' + h.level),
+      el('span', {}, h.score.toLocaleString()),
+    );
+    histEl.append(li);
+  });
+}
+
+async function loadRecords() {
+  try {
+    renderRecords(await api('/api/records'));
+  } catch {
+    document.getElementById('ranking').replaceChildren(el('li', { className: 'muted' }, 'ランキングを取得できません'));
+  }
+}
+
+async function saveRecord(finalScore, finalLevel) {
+  if (!user) {
+    saveStatus.textContent = 'ログインすると記録を保存できます';
+    return;
+  }
+  saveStatus.textContent = '記録を保存中…';
+  try {
+    const data = await api('/api/records', { method: 'POST', body: JSON.stringify({ score: finalScore, level: finalLevel }) });
+    saveStatus.textContent = data.newBest ? '自己ベスト更新! 記録を保存しました' : '記録を保存しました';
+    renderRecords(data);
+  } catch (err) {
+    if (err.status === 401) {
+      setToken(null);
+      user = null;
+      renderAccount('ログインの有効期限が切れました。再ログインしてください');
+    }
+    saveStatus.textContent = '保存できませんでした: ' + err.message;
+  }
+}
+
+async function initAccount() {
+  if (token) {
+    try {
+      user = (await api('/api/auth')).user;
+    } catch (err) {
+      if (err.status === 401) setToken(null);
+    }
+  }
+  renderAccount();
+  loadRecords();
+}
+
+initBricks();
+resetBall();
+loop();
+initAccount();
+</script>
+</body>
+</html>
