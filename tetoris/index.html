@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <title>テトリス</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <main class="app">
+    <section class="side left">
+      <div class="panel">
+        <h2>HOLD</h2>
+        <canvas id="hold" width="96" height="96"></canvas>
+      </div>
+      <div class="panel stats">
+        <div><span>SCORE</span><b id="score">0</b></div>
+        <div><span>LINES</span><b id="lines">0</b></div>
+        <div><span>LEVEL</span><b id="level">1</b></div>
+      </div>
+    </section>
+
+    <section class="board-wrap">
+      <canvas id="board" width="300" height="600"></canvas>
+      <div id="overlay" class="overlay">
+        <h1>TETRIS</h1>
+        <p id="overlay-msg">Enter / ボタンでスタート</p>
+        <form id="submit-form" class="hidden">
+          <input id="player-name" maxlength="12" placeholder="名前 (12文字まで)" autocomplete="nickname" required />
+          <button type="submit">記録を登録</button>
+          <p id="submit-status" class="status"></p>
+        </form>
+        <button id="start-btn">スタート</button>
+      </div>
+    </section>
+
+    <section class="side right">
+      <div class="panel">
+        <h2>NEXT</h2>
+        <canvas id="next" width="96" height="288"></canvas>
+      </div>
+      <div class="panel ranking">
+        <h2>RANKING</h2>
+        <ol id="ranking"><li class="muted">読み込み中…</li></ol>
+      </div>
+    </section>
+  </main>
+
+  <div class="touch" aria-label="タッチ操作">
+    <button data-act="left">◀</button>
+    <button data-act="rotate">⟳</button>
+    <button data-act="right">▶</button>
+    <button data-act="hold">HOLD</button>
+    <button data-act="soft">▼</button>
+    <button data-act="hard">⤓</button>
+  </div>
+
+  <p class="help">←→ 移動 / ↑・X 右回転 / Z 左回転 / ↓ ソフトドロップ / Space ハードドロップ / C ホールド / P 一時停止</p>
+
+  <script src="/tetris.js"></script>
+</body>
+</html>
